@@ -27,7 +27,7 @@ public:
 
         // If not found, add as new
         cards.push_back(FlashCard(question, answer));
-        cout << endl <<"Student added successfully!" << endl;
+        cout << endl <<"Flashcard added successfully!" << endl;
         count++;
     }
 
@@ -58,7 +58,8 @@ public:
 
 class MemoryReview {
 public:
-    void runReview(vector<FlashCard> &cards) {
+    vector<FlashCard> forgottenCards;
+    void runReview(vector<FlashCard>& cards) {
         for (int i=0;i<cards.size();i++) {
             cout << endl << "Q: " << cards[i].question << endl;
             cout << "Do you remember the answer? (y/n): ";
@@ -68,22 +69,62 @@ public:
 
             if (input == 'n' || input == 'N') {
                 cout << "Answer: " << cards[i].answer << endl;
+                forgottenCards.push_back(cards[i]);
                 if (cards[i].score > 0) cards[i].score--;
-            } else {
+            } 
+            else if (input == 'y' || input == 'Y'){
                 cout << "Great! Let's move on."<<endl;
                 cards[i].score++;
             }
             cout<<"Current score:"<<cards[i].score<<endl;
         }
     }
+
+    vector<FlashCard>& getForgottenCards() {
+        return forgottenCards;
+    }
 };
 
+class Repetition {
+public:
+    void spacedRepetition(vector<FlashCard>& forgottenCards) {
+        int i;
+
+        if (!forgottenCards.empty()) {
+            cout << endl << " Repeating forgotten cards..." << endl;
+            for (i=0;i<forgottenCards.size();i++) {
+                cout << "\nQ: " << forgottenCards[i].question << endl;
+                cout << "Do you remember the answer this time? (y/n): ";
+                char input;
+                cin >> input;
+                cin.ignore();
+
+                if (input == 'n' || input == 'N') {
+                    cout << "Answer: " << forgottenCards[i].answer << endl;
+                    if (forgottenCards[i].score > 0) {forgottenCards[i].score--;} 
+                    else if (input == 'y' || input == 'Y'){
+                    cout << "Nice! You're improving." << endl;
+                    forgottenCards[i].score++;
+                    }
+                cout << "Current score: " << forgottenCards[i].score << endl;
+                }
+                else {
+                    cout << endl << "You remembered all cards the first time!"<<endl;
+                }
+            }
+        }
+    }};
+    
+
+
 class App {
+    private:
     FlashCardSet cardSet;
     MemoryReview memoryReview;
+    Repetition spaced;
     string filename;
 
-public:
+    public:
     App(const string &file = "flashcards_data.dat") : filename(file) {}
 
     void saveData(){
@@ -124,9 +165,10 @@ public:
             cout << "1. Add new card" << endl;
             cout << "2. Show all cards" << endl;
             cout << "3. Memory Review Mode (Do you remember?)" << endl;
-            cout << "4. Save flashcard to the file" << endl;
-            cout << "5. Load flashcard from the file" << endl;
-            cout << "6. Exit" << endl;
+            cout << "4. Spaced Repetition Mode (Forgotten only)" << endl;
+            cout << "5. Save flashcard to the file" << endl;
+            cout << "6. Load flashcard from the file" << endl;
+            cout << "7. Exit" << endl;
             cout << "Enter choice: ";
             cin >> choice;
             cin.ignore();
@@ -148,23 +190,26 @@ public:
                     memoryReview.runReview(cardSet.getCards());
                     break;
                 case 4:
-                    saveData();
+                    spaced.spacedRepetition(memoryReview.getForgottenCards());
                     break;
                 case 5:
-                    loadData();
+                    saveData();
                     break;
                 case 6:
+                    loadData();
+                    break;
+                case 7:
                     cout << "Goodbye!\n";
                     break;
                 default:
                     cout << "Invalid choice.\n";
             }
 
-        } while (choice != 6);
+        } while (choice != 7);
     }
 };
 
-int main() {
+int main(){
     App app;
     app.run();
     return 0;
