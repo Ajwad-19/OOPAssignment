@@ -58,6 +58,7 @@ public:
 
 class MemoryReview {
 public:
+    int sum=0;
     vector<FlashCard> forgottenCards;
     void runReview(vector<FlashCard>& cards) {
         for (int i=0;i<cards.size();i++) {
@@ -70,13 +71,13 @@ public:
             if (input == 'n' || input == 'N') {
                 cout << "Answer: " << cards[i].answer << endl;
                 forgottenCards.push_back(cards[i]);
-                if (cards[i].score > 0) cards[i].score--;
+                if (sum > 0) sum--;
             } 
             else if (input == 'y' || input == 'Y'){
                 cout << "Great! Let's move on."<<endl;
-                cards[i].score++;
+                sum++;
             }
-            cout<<"Current score:"<<cards[i].score<<endl;
+            cout<<"Current score:"<<sum<<endl;
         }
     }
 
@@ -88,7 +89,7 @@ public:
 class Repetition {
 public:
     void spacedRepetition(vector<FlashCard>& forgottenCards) {
-        int i;
+        int i,sum=0;
 
         if (!forgottenCards.empty()) {
             cout << endl << " Repeating forgotten cards..." << endl;
@@ -101,15 +102,15 @@ public:
 
                 if (input == 'n' || input == 'N') {
                     cout << "Answer: " << forgottenCards[i].answer << endl;
-                    if (forgottenCards[i].score > 0) {forgottenCards[i].score--;} 
+                    if (sum > 0) {sum--;} 
                     else if (input == 'y' || input == 'Y'){
                     cout << "Nice! You're improving." << endl;
-                    forgottenCards[i].score++;
+                    sum++;
                     }
-                cout << "Current score: " << forgottenCards[i].score << endl;
+                cout << "Current score: " << sum << endl;
                 }
                 else {
-                    cout << endl << "You remembered all cards the first time!"<<endl;
+                    cout << endl << "You remembered all of the forgotten cards!"<<endl;
                 }
             }
         }
